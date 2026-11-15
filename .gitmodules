@@ -1,0 +1,9 @@
+[submodule "thirdparty/quickjs"]
+	path = thirdparty/quickjs
+	url = https://github.com/quickjs-ng/quickjs.git
+[submodule "thirdparty/nanovg"]
+	path = thirdparty/nanovg
+	url = https://github.com/memononen/nanovg
+[submodule "thirdparty/pugl"]
+	path = thirdparty/pugl
+	url = https://github.com/lv2/pugl
