@@ -30,6 +30,8 @@ struct FlexItem
 	Align align;
 	double grow, shrink;
 	double base = 0, min = 0, max = 0, hyp = 0, main = 0, cross = 0;
+	//! a baseline-aligned row item's offset in its line
+	double boff = 0;
 	bool frozen = false;
 	double viol = 0;
 	//! a column item of a definite height whose least is the height its content needs when that is less: its min
@@ -360,6 +362,29 @@ Layout::Content Layout::layout_flex(LayoutNode &n, double cw, std::optional<doub
 				layout_box(it, d->cross, d->main, cw, ch_def);
 			lc = std::max(lc, d->cross + d->m_cross);
 		}
+		// a row's baseline-aligned items: their first baselines on one line, the line as tall as that makes it
+		if (row)
+		{
+			auto on_base = [](const FlexItem *d) { return d->align == Align::Baseline && !d->auto_cs && !d->auto_ce; };
+			double above = 0, below = 0;
+			bool any = false;
+			for (FlexItem *d : line)
+				if (on_base(d))
+				{
+					const double b = d->mt + (d->it->base ? *d->it->base : d->it->h);
+					d->boff = b;
+					above = std::max(above, b);
+					below = std::max(below, d->cross + d->m_cross - b);
+					any = true;
+				}
+			if (any)
+			{
+				for (FlexItem *d : line)
+					if (on_base(d))
+						d->boff = above - d->boff;
+				lc = std::max(lc, above + below);
+			}
+		}
 		line_cross.push_back(lc);
 	}
 	if (lines.size() == 1 && cross_size)
@@ -453,6 +478,8 @@ Layout::Content Layout::layout_flex(LayoutNode &n, double cw, std::optional<doub
 				off = free_c;
 			else if (d->align == Align::Center)
 				off = free_c / 2;
+			else if (row && d->align == Align::Baseline)
+				off = d->boff;
 			else if (is_end(d->align))
 				off = free_c;
 			const double mc = row ? d->mt : d->ml;
