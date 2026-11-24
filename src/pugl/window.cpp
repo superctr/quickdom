@@ -70,6 +70,8 @@ struct qdom_window
 		std::string name;
 	};
 	std::vector<Held> held;
+	// the last button press or release, to know it again: Wine under X11 sends each one twice
+	PuglButtonEvent last_button = {};
 	// the pointer's last move not handed over yet: the moves between two frames go as one
 	bool moved = false;
 	double move_x = 0, move_y = 0;
@@ -386,6 +388,10 @@ PuglStatus handle_event(qdom_window_t *w, const PuglEvent &e)
 		break;
 	case PUGL_BUTTON_PRESS:
 	case PUGL_BUTTON_RELEASE:
+		if (e.button.type == w->last_button.type && e.button.button == w->last_button.button
+			&& e.button.time == w->last_button.time && e.button.x == w->last_button.x && e.button.y == w->last_button.y)
+			break;
+		w->last_button = e.button;
 		if (dom)
 			qdom_input_pointer(dom, e.type == PUGL_BUTTON_PRESS ? QDOM_POINTER_DOWN : QDOM_POINTER_UP, w->css(e.button.x),
 				w->css(e.button.y), button_of(e.button.button), mods_of(e.button.state));
