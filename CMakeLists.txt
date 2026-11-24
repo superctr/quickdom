@@ -5,6 +5,7 @@ cmake_minimum_required(VERSION 3.23)
 project(quickdom VERSION 0.1.0 LANGUAGES C CXX)
 
 option(QUICKDOM_FONTS "Build the default fonts (Noto Sans, DejaVu) into the library" ON)
+option(QUICKDOM_FONT_CJK "Build the Japanese fallback (Noto Sans CJK JP, 1.6 MB) in with them" ON)
 option(QUICKDOM_TOOLS "Build qdom-run, the headless runner" ${PROJECT_IS_TOP_LEVEL})
 option(QUICKDOM_GL "Build quickdom_gl, the nanovg/OpenGL 2.1 backend (needs the system's GL)" ${PROJECT_IS_TOP_LEVEL})
 option(QUICKDOM_PUGL "Build quickdom_pugl, the PUGL window (needs quickdom_gl; X11 on Linux)" ${PROJECT_IS_TOP_LEVEL})
@@ -56,6 +57,9 @@ quickdom_embed(${QUICKDOM_GENERATED}/prelude.c qdom_prelude ${PROJECT_SOURCE_DIR
 set(QUICKDOM_FONT_FILES NotoSans-Regular.ttf NotoSans-Bold.ttf NotoSans-Italic.ttf NotoSans-BoldItalic.ttf
 	DejaVuSans.ttf DejaVuSans-Bold.ttf DejaVuSansMono.ttf DejaVuSansMono-Bold.ttf
 	NotoSansSymbols2-Regular.ttf NotoColorEmoji.ttf)
+if(QUICKDOM_FONT_CJK)
+	list(APPEND QUICKDOM_FONT_FILES NotoSansCJKjp-Regular.otf)
+endif()
 if(QUICKDOM_FONTS)
 	quickdom_embed(${QUICKDOM_GENERATED}/fonts.c qdom_fonts ${PROJECT_SOURCE_DIR}/fonts ${QUICKDOM_FONT_FILES})
 	set(QUICKDOM_FONT_SOURCES ${QUICKDOM_GENERATED}/fonts.c)

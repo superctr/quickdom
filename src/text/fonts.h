@@ -4,7 +4,7 @@
 //! (GPOS pair adjustments, as the browser's shaper applies them, without other shaping), each advance in 60ths of
 //! a pixel as Firefox keeps them. A glyph a face lacks comes from the fallback fonts as Firefox's fallback finds
 //! them: the emoji family first for a character shown as an emoji (Noto Color Emoji), else the fallback family
-//! (DejaVu Sans), the symbols family (Noto Sans Symbols 2), the emoji family. A colour glyph (a CBDT bitmap, Noto
+//! (DejaVu Sans), the Japanese family (Noto Sans CJK JP), the symbols family (Noto Sans Symbols 2), the emoji family. A colour glyph (a CBDT bitmap, Noto
 //! Color Emoji's) is a picture, reduced as Firefox's WebRender reduces it. The same measure serves the layout and
 //! the drawing (headless, no GPU needed).
 #pragma once
@@ -133,6 +133,7 @@ private:
 	{
 		int font;
 		int fallback;
+		int cjk;
 		int symbols;
 		int emoji;
 		std::vector<int32_t> glyphs;  //!< font << 24 | glyph for the codepoints below 0x3000, -1 until looked up
@@ -149,6 +150,7 @@ private:
 	std::vector<Family> m_families;
 	std::unordered_map<std::string, std::string> m_generic;
 	std::string m_fallback;
+	std::string m_cjk;
 	std::string m_symbols;
 	std::string m_emoji;
 	std::vector<Face> m_faces;

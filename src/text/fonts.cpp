@@ -401,6 +401,7 @@ FontSet::FontSet()
 	m_generic["monospace"] = "dejavu sans mono";
 	m_generic["ui-monospace"] = "dejavu sans mono";
 	m_fallback = "dejavu sans";
+	m_cjk = "noto sans cjk jp";
 	m_symbols = "noto sans symbols 2";
 	m_emoji = "noto color emoji";
 }
@@ -469,6 +470,7 @@ bool FontSet::add_defaults()
 		bool italic;
 		MetricsRounding rounding;
 		bool whole = false;
+		bool optional = false;
 	} files[] = {
 		{ "NotoSans-Regular.ttf", "Noto Sans", 400, false, MetricsRounding::Round },
 		{ "NotoSans-Bold.ttf", "Noto Sans", 700, false, MetricsRounding::Round },
@@ -478,6 +480,7 @@ bool FontSet::add_defaults()
 		{ "DejaVuSans-Bold.ttf", "DejaVu Sans", 700, false, MetricsRounding::Ceil },
 		{ "DejaVuSansMono.ttf", "DejaVu Sans Mono", 400, false, MetricsRounding::Ceil },
 		{ "DejaVuSansMono-Bold.ttf", "DejaVu Sans Mono", 700, false, MetricsRounding::Ceil },
+		{ "NotoSansCJKjp-Regular.otf", "Noto Sans CJK JP", 400, false, MetricsRounding::Round, false, true },
 		{ "NotoSansSymbols2-Regular.ttf", "Noto Sans Symbols 2", 400, false, MetricsRounding::Round },
 		{ "NotoColorEmoji.ttf", "Noto Color Emoji", 400, false, MetricsRounding::Round, true },
 	};
@@ -488,6 +491,8 @@ bool FontSet::add_defaults()
 		for (size_t i = 0; i < qdom_fonts_count; i++)
 			if (!strcmp(qdom_fonts[i].name, f.file))
 				e = &qdom_fonts[i];
+		if (!e && f.optional)
+			continue;
 		if (!e || !add(f.family, f.weight, f.italic, e->data, e->size, true, f.rounding, f.whole))
 			all = false;
 	}
@@ -565,19 +570,21 @@ FaceId FontSet::face(std::string_view families, int weight, FontStyle style)
 	}
 	if (font < 0 && !m_families.empty())
 		font = family_font(m_families.front(), bold, italic);
-	int fallback = -1, symbols = -1, emoji = -1;
+	int fallback = -1, cjk = -1, symbols = -1, emoji = -1;
 	if (const Family *f = find_family(m_fallback))
 		fallback = family_font(*f, bold, false);
+	if (const Family *f = find_family(m_cjk))
+		cjk = family_font(*f, false, false);
 	if (const Family *f = find_family(m_symbols))
 		symbols = family_font(*f, false, false);
 	if (const Family *f = find_family(m_emoji))
 		emoji = family_font(*f, false, false);
 	// one face per set of fonts
 	for (size_t i = 0; i < m_faces.size(); i++)
-		if (m_faces[i].font == font && m_faces[i].fallback == fallback && m_faces[i].symbols == symbols
-			&& m_faces[i].emoji == emoji)
+		if (m_faces[i].font == font && m_faces[i].fallback == fallback && m_faces[i].cjk == cjk
+			&& m_faces[i].symbols == symbols && m_faces[i].emoji == emoji)
 			return m_face_keys[key] = FaceId(i);
-	m_faces.push_back({ font, fallback, symbols, emoji, {} });
+	m_faces.push_back({ font, fallback, cjk, symbols, emoji, {} });
 	return m_face_keys[key] = FaceId(m_faces.size() - 1);
 }
 
@@ -593,9 +600,10 @@ void FontSet::glyph_of(Face &face, uint32_t c, bool emoji, int &font, int &glyph
 	font = face.font;
 	glyph = font >= 0 ? stbtt_FindGlyphIndex(&m_fonts[font]->info, int(c)) : 0;
 	// the face's own font first; then, as Firefox's fallback goes, the emoji font for a character shown as an emoji
-	// (by default, or asked for by U+FE0F), DejaVu Sans, Noto Sans Symbols 2, and the emoji font for the rest
+	// (by default, or asked for by U+FE0F), DejaVu Sans, Noto Sans CJK JP, Noto Sans Symbols 2, and the emoji font for
+	// the rest
 	const bool prefer = emoji || emoji_presentation(c);
-	const int order[] = { prefer ? face.emoji : -1, face.fallback, face.symbols, face.emoji };
+	const int order[] = { prefer ? face.emoji : -1, face.fallback, face.cjk, face.symbols, face.emoji };
 	for (int f : order)
 	{
 		if (glyph || f < 0 || f == face.font)

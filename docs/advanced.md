@@ -2,7 +2,8 @@
 
 ## Build options
 
-- `-DQUICKDOM_FONTS=OFF` leaves the built-in fonts out of the library;
+- `-DQUICKDOM_FONTS=OFF` leaves the built-in fonts out of the library, `-DQUICKDOM_FONT_CJK=OFF` only the Japanese
+  fallback (1.6 MB);
 - `-DQUICKDOM_TOOLS`, `-DQUICKDOM_GL` and `-DQUICKDOM_PUGL` build `qdom-run`, `quickdom_gl` and `quickdom_pugl`; they
   are on only when quickdom is the top-level project.
 

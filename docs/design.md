@@ -61,8 +61,8 @@ frames, layout, resize observers), hands over the window's input (`qdom_input_*`
 - **Text.** TrueType fonts read with stb_truetype, advances and kerning rounded as Firefox's layout keeps them, line
   heights as Firefox makes room for every font a line's glyphs come from. A glyph the face lacks comes from the
   fallbacks in the order Firefox finds them on Linux; colour emoji are Noto Color Emoji's bitmaps, reduced and drawn
-  smooth as WebRender does them. Built-in subsets of Noto Sans, DejaVu, Noto Sans Symbols 2 and Noto Color Emoji
-  (`fonts/`); hosts add their own (`qdom_add_font`).
+  smooth as WebRender does them. Built-in subsets of Noto Sans, DejaVu, Noto Sans CJK JP, Noto Sans Symbols 2 and
+  Noto Color Emoji (`fonts/`); hosts add their own (`qdom_add_font`).
 - **Paint.** The document becomes a list of drawing commands (`src/paint/commands.h`): backgrounds, gradients,
   borders and radii, shadows, text with ellipses, controls, SVG items, canvases' recordings, scrollbars, the top
   layer, and what the input draws over the page (a list's popup, a tooltip, the caret). Hit testing walks the same

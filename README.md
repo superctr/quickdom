@@ -29,8 +29,8 @@ Written in C++20 with a C interface.  BSD-3.
 	- the page as a list of drawing commands, with hit testing
 	- `quickdom_gl`: the commands drawn with nanovg on OpenGL 2.1 (Linux and Windows)
 	- `quickdom_pugl`: a page in a window of its own, or in a host's (such as a plugin's)
-- **Fonts**: Noto Sans and DejaVu built in, with Noto Sans Symbols 2 and Noto Color Emoji as fallbacks; colour emoji
-  drawn as Firefox draws them.
+- **Fonts**: Noto Sans and DejaVu built in, with Noto Sans CJK JP (Japanese), Noto Sans Symbols 2 and Noto Color
+  Emoji as fallbacks; colour emoji drawn as Firefox draws them.
 - **Fast updates**: only what a change reaches is restyled and laid out again; a frame of a 1,500-box page with one
   control changed takes about 0.1 ms.
 - **Memory**: the JavaScript heap is collected when the input goes quiet; `__qdom.retained()` finds what keeps
@@ -64,8 +64,9 @@ quickdom is under the BSD 3-Clause License (`LICENSE`).
 - QuickJS-ng (MIT), nanovg (zlib) and PUGL (ISC) are submodules.
 - `thirdparty/stb/stb_truetype.h` and nanovg's copies of stb_image and stb_image_write are public domain.
 - The fonts are Noto Sans (SIL OFL 1.1, `fonts/OFL.txt`) and DejaVu (`fonts/DEJAVU_LICENSE`), cut to Latin,
-  punctuation, arrows and common symbols by `fonts/subset.sh`, and Noto Sans Symbols 2 and Noto Color Emoji (SIL OFL
-  1.1), cut by `fonts/fallbacks.py`.
+  punctuation, arrows and common symbols by `fonts/subset.sh`, Noto Sans Symbols 2 and Noto Color Emoji (SIL OFL
+  1.1), cut by `fonts/fallbacks.py`, and Noto Sans CJK JP (© 2014-2021 Adobe, SIL OFL 1.1), cut to the characters of
+  Shift JIS by `fonts/cjk.py`.
 
 ## Disclaimers
 
